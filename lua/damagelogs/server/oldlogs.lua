@@ -25,7 +25,7 @@ if Damagelog.Use_MySQL then
 		Damagelog.MySQL_Connected = true
 
 		local create_table1 = self:query([[
-			CREATE TABLE IF NOT EXISTS damagelog_oldlogs_v3 (
+			CREATE TABLE IF NOT EXISTS damagelog_oldlogs_v4 (
 			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 			year INTEGER NOT NULL,
 			month INTEGER NOT NULL,
@@ -46,7 +46,7 @@ if Damagelog.Use_MySQL then
 		]])
 		create_table2:start()
 
-		local list = self:query("SELECT MIN(date), MAX(date) FROM damagelog_oldlogs_v3;")
+		local list = self:query("SELECT MIN(date), MAX(date) FROM damagelog_oldlogs_v4;")
 		list.onSuccess = function(query)
 			local data = query:getData()
 			if not data[1] then return end
@@ -57,12 +57,12 @@ if Damagelog.Use_MySQL then
 
 		list:start()
 
-		local delete_old = self:query("DELETE FROM damagelog_oldlogs_v3 WHERE date <= " .. limit .. ";")
+		local delete_old = self:query("DELETE FROM damagelog_oldlogs_v4 WHERE date <= " .. limit .. ";")
 		delete_old:start()
 
 		Damagelog.OldLogsDays = {}
 
-		local yearsQuery = self:query("SELECT DISTINCT year FROM damagelog_oldlogs_v3;")
+		local yearsQuery = self:query("SELECT DISTINCT year FROM damagelog_oldlogs_v4;")
 		yearsQuery.onSuccess = function(slf)
 			local years = slf:getData()
 
@@ -71,7 +71,7 @@ if Damagelog.Use_MySQL then
 				if y then
 					Damagelog.OldLogsDays[y] = {}
 
-					local monthQuery = self:query("SELECT DISTINCT month FROM damagelog_oldlogs_v3;")
+					local monthQuery = self:query("SELECT DISTINCT month FROM damagelog_oldlogs_v4;")
 					monthQuery.onSuccess = function(slf2)
 						local months = slf2:getData()
 
@@ -81,7 +81,7 @@ if Damagelog.Use_MySQL then
 							if m then
 								Damagelog.OldLogsDays[y][m] = {}
 
-								local dayQuery = self:query("SELECT DISTINCT day FROM damagelog_oldlogs_v3;")
+								local dayQuery = self:query("SELECT DISTINCT day FROM damagelog_oldlogs_v4;")
 								dayQuery.onSuccess = function(slf3)
 									local days = slf3:getData()
 
@@ -114,11 +114,12 @@ if Damagelog.Use_MySQL then
 
 	Damagelog.database:connect()
 else
-	if not sql.TableExists("damagelog_oldlogs_v3") then
+	if not sql.TableExists("damagelog_oldlogs_v4") then
 		-- year/month/day are only here to send the list of days to the client
 		-- date is the UNIX TIME
+		-- id UNSIGNED INTEGER PRIMARY KEY is always null but it dosen't return any error. 
 		sql.Query([[
-			CREATE TABLE IF NOT EXISTS damagelog_oldlogs_v3 (
+			CREATE TABLE IF NOT EXISTS damagelog_oldlogs_v4 (
 			id INTEGER PRIMARY KEY NOT NULL,
 			year INTEGER NOT NULL,
 			month INTEGER NOT NULL,
@@ -139,29 +140,29 @@ else
 		]])
 	end
 
-	Damagelog.OlderDate = tonumber(sql.QueryValue("SELECT MIN(date) FROM damagelog_oldlogs_v3 WHERE damagelog IS NOT NULL;"))
-	Damagelog.LatestDate = tonumber(sql.QueryValue("SELECT MAX(date) FROM damagelog_oldlogs_v3 WHERE damagelog IS NOT NULL;"))
+	Damagelog.OlderDate = tonumber(sql.QueryValue("SELECT MIN(date) FROM damagelog_oldlogs_v4 WHERE damagelog IS NOT NULL;"))
+	Damagelog.LatestDate = tonumber(sql.QueryValue("SELECT MAX(date) FROM damagelog_oldlogs_v4 WHERE damagelog IS NOT NULL;"))
 
-	sql.Query("DELETE FROM damagelog_oldlogs_v3 WHERE date <= " .. limit .. ";")
+	sql.Query("DELETE FROM damagelog_oldlogs_v4 WHERE date <= " .. limit .. ";")
 
 	-- Get the list of days and send it to the client
 	Damagelog.OldLogsDays = {}
 
-	local years = sql.Query("SELECT DISTINCT year FROM damagelog_oldlogs_v3;") or {}
+	local years = sql.Query("SELECT DISTINCT year FROM damagelog_oldlogs_v4;") or {}
 
 	for _, year in pairs(years) do
 		local y = tonumber(year.year)
 		if y then
 			Damagelog.OldLogsDays[y] = {}
 
-			local months = sql.Query("SELECT DISTINCT month FROM damagelog_oldlogs_v3 WHERE year = " .. y .. ";") or {}
+			local months = sql.Query("SELECT DISTINCT month FROM damagelog_oldlogs_v4 WHERE year = " .. y .. ";") or {}
 
 			for _, month in pairs(months) do
 				local m = tonumber(month.month)
 				if m then
 					Damagelog.OldLogsDays[y][m] = {}
 
-					local days = sql.Query("SELECT DISTINCT day FROM damagelog_oldlogs_v3 WHERE year = " .. y .. " AND month = " .. m .. ";") or {}
+					local days = sql.Query("SELECT DISTINCT day FROM damagelog_oldlogs_v4 WHERE year = " .. y .. " AND month = " .. m .. ";") or {}
 
 					for _, day in pairs(days) do
 						local d = tonumber(day.day)
@@ -196,13 +197,13 @@ hook.Add("TTTEndRound", "Damagelog_EndRound", function()
 		local day = tonumber(os.date("%d"))
 
 		if Damagelog.Use_MySQL and Damagelog.MySQL_Connected then
-			local insert = string.format("INSERT INTO damagelog_oldlogs_v3(`year`, `month`, `day`, `date`, `round`, `map`, `damagelog`) VALUES(%i, %i, %i, %i, %i, \"%s\", COMPRESS(%s));",
+			local insert = string.format("INSERT INTO damagelog_oldlogs_v4(`year`, `month`, `day`, `date`, `round`, `map`, `damagelog`) VALUES(%i, %i, %i, %i, %i, \"%s\", COMPRESS(%s));",
 			year, month, day, t, Damagelog.CurrentRound, game.GetMap(), sql.SQLStr(logs))
 
 			local query = Damagelog.database:query(insert)
 			query:start()
 		elseif not Damagelog.Use_MySQL then
-			local insert = string.format("INSERT INTO damagelog_oldlogs_v3(`year`, `month`, `day`, `date`, `round`, `map`, `damagelog`) VALUES(%i, %i, %i, %i, %i, \"%s\", %s);",
+			local insert = string.format("INSERT INTO damagelog_oldlogs_v4(`year`, `month`, `day`, `date`, `round`, `map`, `damagelog`) VALUES(%i, %i, %i, %i, %i, \"%s\", %s);",
 			year, month, day, t, Damagelog.CurrentRound, game.GetMap(), sql.SQLStr(logs))
 			sql.Query(insert)
 		end
@@ -250,7 +251,7 @@ net.Receive("DL_AskOldLogRounds", function(_, ply)
 	local _date = "20" .. year .. "-" .. month .. "-" .. day -- TODO: not the best way if someone uses this in 2100 too ;)
 
 	if Damagelog.Use_MySQL and Damagelog.MySQL_Connected then
-		local query_str = "SELECT date,map,round FROM damagelog_oldlogs_v3 WHERE date BETWEEN UNIX_TIMESTAMP(\"" .. _date .. " 00:00:00\") AND UNIX_TIMESTAMP(\"" .. _date .. " 23:59:59\") ORDER BY date ASC;"
+		local query_str = "SELECT date,map,round FROM damagelog_oldlogs_v4 WHERE date BETWEEN UNIX_TIMESTAMP(\"" .. _date .. " 00:00:00\") AND UNIX_TIMESTAMP(\"" .. _date .. " 23:59:59\") ORDER BY date ASC;"
 
 		local query = Damagelog.database:query(query_str)
 		query.onSuccess = function(self)
@@ -267,7 +268,7 @@ net.Receive("DL_AskOldLogRounds", function(_, ply)
 
 		query:start()
 	else
-		local query_str = "SELECT date,map,round FROM damagelog_oldlogs_v3 WHERE date BETWEEN strftime(\"%s\", \"" .. _date .. " 00:00:00\") AND strftime(\"%s\", \"" .. _date .. " 23:59:59\") ORDER BY date ASC;"
+		local query_str = "SELECT date,map,round FROM damagelog_oldlogs_v4 WHERE date BETWEEN strftime(\"%s\", \"" .. _date .. " 00:00:00\") AND strftime(\"%s\", \"" .. _date .. " 23:59:59\") ORDER BY date ASC;"
 
 		local result = sql.Query(query_str)
 		if not result then
@@ -287,7 +288,7 @@ net.Receive("DL_AskOldLog", function(_, ply)
 		local _time = net.ReadUInt(32)
 
 		if Damagelog.Use_MySQL and Damagelog.MySQL_Connected then
-			local query = Damagelog.database:query("SELECT UNCOMPRESS(damagelog) FROM damagelog_oldlogs_v3 WHERE date = " .. _time .. ";")
+			local query = Damagelog.database:query("SELECT UNCOMPRESS(damagelog) FROM damagelog_oldlogs_v4 WHERE date = " .. _time .. ";")
 			query.onSuccess = function(self)
 				local data = self:getData()
 
@@ -302,7 +303,7 @@ net.Receive("DL_AskOldLog", function(_, ply)
 
 			query:start()
 		elseif not Damagelog.Use_MySQL then
-			local query = sql.QueryValue("SELECT damagelog FROM damagelog_oldlogs_v3 WHERE date = " .. _time)
+			local query = sql.QueryValue("SELECT damagelog FROM damagelog_oldlogs_v4 WHERE date = " .. _time)
 
 			if query then
 				SendLogs(ply, util.Compress(query), false)

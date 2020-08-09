@@ -213,7 +213,7 @@ function Damagelog:SendDamagelog(ply, round)
 
 		if not Damagelog.PreviousMap then
 			if Damagelog.Use_MySQL then
-				local query = self.database:query("SELECT damagelog FROM damagelog_oldlogs_v3 WHERE date = " .. self.last_round_map .. ";")
+				local query = self.database:query("SELECT damagelog FROM damagelog_oldlogs_v4 WHERE date = " .. self.last_round_map .. ";")
 
 				query.onSuccess = function(q)
 					local data = q:getData()
@@ -237,7 +237,7 @@ function Damagelog:SendDamagelog(ply, round)
 
 				query:start()
 			else
-				local query = sql.QueryValue("SELECT damagelog FROM damagelog_oldlogs_v3 WHERE date = " .. self.last_round_map)
+				local query = sql.QueryValue("SELECT damagelog FROM damagelog_oldlogs_v4 WHERE date = " .. self.last_round_map)
 				if not query then return end
 
 				local decoded = util.JSONToTable(query)
