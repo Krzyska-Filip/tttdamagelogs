@@ -280,41 +280,6 @@ DamagelogLang.polish = {
 	StandardAdminReport = "Zgłoszenie jako administrator",
 	AdvancedAdminReportForce = "Zaawansowane zgłoszenie jako administrator: bezpośrednio wymuś otworzenie okna z odpowiedzią",
 	AdvancedAdminReportChat = "Zaawansowane zgłoszenie jako administrator: bezpośrednio otwórz czat z graczem",
-	SlayNextRound = "Zabij w następnej rundzie",
-	JailNextRound = "Uwięź w następnej rundzie",
-	SlayReportedPlayerNow = "Zabij zgłoszonego gracz teraz",
-	SendMessage = "Wyśli wiadomość do",
-	PrivateMessage = "Prywatna wiadomość",
-	WhatToSay = "Co chciałbyś/abyś powiedzieć do %s?",
-	RemoveAutoSlays = "Usuń automatyczne zabicia z",
-	RemoveAutoJails = "Usuń automatyczne uwiężenia z",
-	RemoveOneAutoSlay = "Usuń jedno automatyczne zabicie z",
-	TheVictim = "Ofiara",
-	ChatActive = "Aktywny czat",
-	GoingToSlay = "Masz zamiar zabić",
-	ThisOften = "Tak często:",
-	Reason = "Powód: ",
-	GoingToBan = "Masz zamiar zbanować",
-	Permanently = "permanentnie",
-	ForMinutes = "na %s minut(y)",
-	ForHours = "na %s godziny(y)",
-	ForDays = "na %s dni",
-	Minutes = "Minuty",
-	Hours = "Godziny",
-	Days = "Dni",
-	forspace = "dla ", --change later
-	AutoReasonJail = "(Auto) %s autojailed %s times for %s",
-	AutoReasonSlay = "(Auto) %s autoslain %s times for %s",
-	AutoReasonBan = "(Auto) %s banned %s for %s",
-	Autoslaying = "Autoslaying %s",
-	Autojailing = "Autojailing %s",
-	DeathShotsInfo = "Death Scene shots information",
-	ShowAllPlayers = "Show all players",
-	PlayerDrowned = "%s [%s] drowned.",
-	YouDecidedForgive = "You decided to forgive %s.",
-	YouDecidedNotForgive = "You decided not to forgive %s.",
-	DecidedToForgiveYou = "%s decided to forgive you.",
-	DecidedNotToForgiveYou = "%s does not want to forgive you.",
 
 	-- Months
 	January = "styczeń",
@@ -351,9 +316,8 @@ DamagelogLang.polish = {
 	CurrentRoundLogs = "Otwórz domyślnie aktualną rundę, jeśli żyjesz i masz odpowiednie uprawnienia",
 	OutsideNotification = "Włącz dźwięk powiadomień poza grą",
 	DamagelogMenuSettings = "Ustawienia menu Logu obrażeń",
-	ForcedLanguage = "The server owner forced the use of this language",
 
-		-- Filters
+	-- Filters
 	filter_show_bodies = "Pokaż identyfikacje zwłok",
 	filter_show_aslays = "Pokaż automatyczne zgładzenia",
 	filter_show_credits = "Pokaż zmiany w liczbie kredytów",
@@ -391,11 +355,6 @@ DamagelogLang.polish = {
 	color_kosradio = "KOSy przez radio",
 	color_purchases = "Zakupy ekwipuneku",
 	color_c4 = "C4",
-	color_team_kills = "Zabójstwa sojuszników"
+	color_team_kills = "Zabójstwa sojuszników",
 	color_drownings = "Utonięcia",
-
-	-- Discord webhook
-	webhook_AdminsOnline = "There is staff online.",
-	webhook_NoAdminsOnline = "There is no staff online.",
-	webhook_ServerInfo = "Current map: %s, round: %s"
 }

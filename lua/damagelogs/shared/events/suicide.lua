@@ -11,7 +11,8 @@ event.Type = "KILL"
 function event:DoPlayerDeath(ply, attacker, dmginfo)
 	local class = attacker:GetClass()
 
-	if (IsValid(attacker) and ((attacker:IsPlayer() and attacker == ply) or class == "prop_physics" or class == "func_physbox")) or attacker:IsWorld() and not (dmginfo:IsDamageType(DMG_DROWN) or (ply.IsGhost and ply:IsGhost())) then
+	if (IsValid(attacker) and ((attacker:IsPlayer() and attacker == ply) or class == "prop_physics" or class == "func_physbox")) or 
+	(attacker:IsWorld() and not (dmginfo:IsDamageType(DMG_DROWN) or (ply.IsGhost and ply:IsGhost()))) or (IsEntity(attacker) and not IsPlayer(attacker)) then
 		Damagelog.SceneID = Damagelog.SceneID + 1
 
 		local scene = Damagelog.SceneID
@@ -35,6 +36,7 @@ function event:DoPlayerDeath(ply, attacker, dmginfo)
 			time = Damagelog.Time,
 			round = Damagelog.CurrentRound,
 		}
+		
 		ply.rdmSend = true
 	end
 end
